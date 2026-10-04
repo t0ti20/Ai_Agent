@@ -1,0 +1,13 @@
+"""Tools for {{ name }}. Type hints become the JSON Schema; the docstring becomes the description."""
+
+from agent_base import tool
+
+
+@tool
+def echo(text: str) -> str:
+    """Repeat text back. Replace this with your agent's real tools.
+
+    Args:
+        text: The text to repeat.
+    """
+    return text

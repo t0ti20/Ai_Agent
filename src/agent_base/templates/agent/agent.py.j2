@@ -1,0 +1,14 @@
+"""{{ description }}"""
+
+from agent_base import BaseAgent
+
+from .tools import echo
+
+
+class {{ class_name }}(BaseAgent):
+    tools = [echo]
+
+    # Override lifecycle hooks as needed, for example:
+    #
+    # async def on_before_tool(self, ctx, call):
+    #     ...

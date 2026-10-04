@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=../../configs/schema/agent.schema.json
+# Merged over configs/default.yaml and configs/models.yaml; any key there can be overridden here.
+agent:
+  name: hello-agent
+  description: A friendly demo agent that can tell the time, count words and greet people.
+  instructions: |
+    Answer briefly and plainly. Use a tool whenever one gives a more accurate answer
+    than guessing, such as the current time.
+  budgets:
+    max_steps: 10
+
+model:
+  profile: smart        # try --profile local (Ollama) or --profile mock (offline)
+  effort: low

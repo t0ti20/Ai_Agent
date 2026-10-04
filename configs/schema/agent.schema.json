@@ -1,0 +1,456 @@
+{
+  "$defs": {
+    "AgentSection": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "default": "agent",
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "instructions": {
+          "default": "",
+          "description": "Rendered into the system prompt.",
+          "title": "Instructions",
+          "type": "string"
+        },
+        "system_prompt": {
+          "default": "system/default.md.j2",
+          "description": "Jinja2 template under a prompts/ folder.",
+          "title": "System Prompt",
+          "type": "string"
+        },
+        "prompt_vars": {
+          "additionalProperties": true,
+          "title": "Prompt Vars",
+          "type": "object"
+        },
+        "loop": {
+          "default": "react",
+          "enum": [
+            "react",
+            "single_shot"
+          ],
+          "title": "Loop",
+          "type": "string"
+        },
+        "budgets": {
+          "$ref": "#/$defs/Budgets"
+        }
+      },
+      "title": "AgentSection",
+      "type": "object"
+    },
+    "Budgets": {
+      "additionalProperties": false,
+      "description": "Per-run limits (FR-04). A run that hits one stops gracefully with a partial result.",
+      "properties": {
+        "max_steps": {
+          "default": 25,
+          "exclusiveMinimum": 0,
+          "title": "Max Steps",
+          "type": "integer"
+        },
+        "max_tokens": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Tokens"
+        },
+        "max_cost_usd": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Cost Usd"
+        },
+        "timeout_s": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timeout S"
+        }
+      },
+      "title": "Budgets",
+      "type": "object"
+    },
+    "LoggingConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "level": {
+          "default": "WARNING",
+          "enum": [
+            "DEBUG",
+            "INFO",
+            "WARNING",
+            "ERROR"
+          ],
+          "title": "Level",
+          "type": "string"
+        }
+      },
+      "title": "LoggingConfig",
+      "type": "object"
+    },
+    "ModelProfile": {
+      "additionalProperties": false,
+      "description": "A named model setup in models.yaml, selected with `model.profile`.",
+      "properties": {
+        "adapter": {
+          "description": "Adapter name: anthropic, openai, openai_compat, mock.",
+          "title": "Adapter",
+          "type": "string"
+        },
+        "model": {
+          "description": "Provider model ID, e.g. claude-opus-5-5 or qwen3:14b.",
+          "title": "Model",
+          "type": "string"
+        },
+        "base_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Base Url"
+        },
+        "api_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Reference to a secret as ${ENV_VAR}; literal keys are rejected (CF-02).",
+          "title": "Api Key"
+        },
+        "max_output_tokens": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Output Tokens"
+        },
+        "temperature": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Only sent when set; current Claude models reject it.",
+          "title": "Temperature"
+        },
+        "timeout_s": {
+          "default": 600.0,
+          "exclusiveMinimum": 0,
+          "title": "Timeout S",
+          "type": "number"
+        },
+        "max_retries": {
+          "default": 2,
+          "minimum": 0,
+          "title": "Max Retries",
+          "type": "integer"
+        },
+        "price": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Price"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "capabilities": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "description": "Overrides for the adapter's capability flags (AD-03).",
+          "title": "Capabilities",
+          "type": "object"
+        },
+        "options": {
+          "additionalProperties": true,
+          "description": "Adapter-specific settings, passed through unchanged.",
+          "title": "Options",
+          "type": "object"
+        }
+      },
+      "required": [
+        "adapter",
+        "model"
+      ],
+      "title": "ModelProfile",
+      "type": "object"
+    },
+    "ModelSection": {
+      "additionalProperties": false,
+      "properties": {
+        "profile": {
+          "default": "smart",
+          "title": "Profile",
+          "type": "string"
+        },
+        "effort": {
+          "anyOf": [
+            {
+              "enum": [
+                "low",
+                "medium",
+                "high",
+                "xhigh",
+                "max"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Unified effort knob, mapped to each provider (AD-04).",
+          "title": "Effort"
+        },
+        "fallback": {
+          "description": "Profiles to try when the primary fails (AD-06).",
+          "items": {
+            "type": "string"
+          },
+          "title": "Fallback",
+          "type": "array"
+        }
+      },
+      "title": "ModelSection",
+      "type": "object"
+    },
+    "Price": {
+      "additionalProperties": false,
+      "description": "USD per million tokens (AD-07).",
+      "properties": {
+        "input": {
+          "default": 0.0,
+          "title": "Input",
+          "type": "number"
+        },
+        "output": {
+          "default": 0.0,
+          "title": "Output",
+          "type": "number"
+        },
+        "cache_read": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cache Read"
+        },
+        "cache_write": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cache Write"
+        }
+      },
+      "title": "Price",
+      "type": "object"
+    },
+    "SkillsConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "paths": {
+          "description": "Project skill folders, relative to the project root.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Paths",
+          "type": "array"
+        },
+        "user_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "~/.agent-base/skills",
+          "title": "User Path"
+        },
+        "enabled": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Skill names to load; null loads every skill found.",
+          "title": "Enabled"
+        }
+      },
+      "title": "SkillsConfig",
+      "type": "object"
+    },
+    "ToolsConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Tool names or namespace globs (files.*); null enables all.",
+          "title": "Enabled"
+        },
+        "disabled": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Disabled",
+          "type": "array"
+        },
+        "require_approval": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Require Approval",
+          "type": "array"
+        },
+        "auto_approve": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Auto Approve",
+          "type": "array"
+        },
+        "ask_for_risks": {
+          "description": "Risk levels that need approval unless auto-approved (SEC-02).",
+          "items": {
+            "enum": [
+              "read",
+              "write",
+              "destructive",
+              "external"
+            ],
+            "type": "string"
+          },
+          "title": "Ask For Risks",
+          "type": "array"
+        },
+        "timeout_s": {
+          "default": 60.0,
+          "exclusiveMinimum": 0,
+          "title": "Timeout S",
+          "type": "number"
+        }
+      },
+      "title": "ToolsConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Root of agent.yaml after all layers are merged (CF-01).",
+  "properties": {
+    "agent": {
+      "$ref": "#/$defs/AgentSection"
+    },
+    "model": {
+      "$ref": "#/$defs/ModelSection"
+    },
+    "profiles": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ModelProfile"
+      },
+      "title": "Profiles",
+      "type": "object"
+    },
+    "skills": {
+      "$ref": "#/$defs/SkillsConfig"
+    },
+    "tools": {
+      "$ref": "#/$defs/ToolsConfig"
+    },
+    "logging": {
+      "$ref": "#/$defs/LoggingConfig"
+    }
+  },
+  "title": "agent-base agent configuration",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

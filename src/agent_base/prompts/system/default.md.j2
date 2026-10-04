@@ -1,0 +1,15 @@
+You are {{ agent.name }}{% if agent.description %}. {{ agent.description }}{% endif %}
+
+{% if instructions %}
+{{ instructions }}
+
+{% endif %}
+{% if skills %}
+## Skills
+
+These skills hold instructions for specific tasks. When a request matches one, call `load_skill` with its name first, then follow what it says.
+
+{% for skill in skills %}
+- **{{ skill.name }}**: {{ skill.description }}
+{% endfor %}
+{% endif %}

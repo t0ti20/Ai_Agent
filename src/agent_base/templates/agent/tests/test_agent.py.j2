@@ -1,0 +1,23 @@
+"""Offline tests for {{ name }}, using the scripted mock model."""
+
+from pathlib import Path
+
+from agent_base.testing import load_test_agent
+
+AGENT_DIR = Path(__file__).resolve().parents[1]
+
+
+async def test_calls_echo_then_answers() -> None:
+    agent, model = load_test_agent(
+        AGENT_DIR,
+        responses=[
+            {"tool_calls": [{"name": "echo", "arguments": {"text": "hi"}}]},
+            "Done.",
+        ],
+    )
+    result = await agent.run("Say hi")
+
+    assert result.stop_reason == "completed"
+    assert result.output == "Done."
+    tool_result = model.requests[1].messages[-1].tool_results[0]
+    assert tool_result.content == "hi"

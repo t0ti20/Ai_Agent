@@ -1,0 +1,13 @@
+site_name: agent-base
+docs_dir: docs
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Concepts: concepts.md
+  - Requirements: requirements.md
+  - Decisions:
+      - adr/0001-record-architecture-decisions.md
+      - adr/0002-model-adapters-first.md
+      - adr/0003-yaml-is-the-source-of-truth.md
+      - adr/0004-append-only-history.md

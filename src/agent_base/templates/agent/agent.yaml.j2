@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=../../configs/schema/agent.schema.json
+# Merged over configs/default.yaml and configs/models.yaml; any key there can be overridden here.
+agent:
+  name: {{ name }}
+  description: {{ description | tojson }}
+  instructions: |
+    Describe how this agent should behave.
+
+model:
+  profile: smart        # smart | fast | openai | local | mock (see configs/models.yaml)
+  effort: medium        # low | medium | high | xhigh | max

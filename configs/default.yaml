@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=schema/agent.schema.json
+# Base config every agent inherits. Merge order (later wins):
+#   default.yaml → models.yaml → env/<AGENT_ENV>.yaml → agents/<name>/agent.yaml
+#   → AGENT_BASE__SECTION__KEY env vars → --set key=value flags
+# See where each value came from: agent config show <agent> --resolved
+
+agent:
+  loop: react                     # react | single_shot
+  system_prompt: system/default.md.j2
+  budgets:
+    max_steps: 25
+    timeout_s: 600
+
+model:
+  profile: smart                  # a profile from models.yaml
+  effort: medium                  # low | medium | high | xhigh | max
+  fallback: []                    # profiles to try if the primary fails, e.g. [local]
+
+skills:
+  paths: [skills]                 # project skills; each agent's own skills/ folder is added after
+  user_path: ~/.agent-base/skills # personal skills, loaded last so they override
+
+tools:
+  ask_for_risks: [write, destructive, external]   # these need approval unless auto_approve lists them
+  require_approval: []
+  auto_approve: []
+  timeout_s: 60
+
+logging:
+  level: WARNING

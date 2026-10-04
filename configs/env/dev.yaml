@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=../schema/agent.schema.json
+# Development overlay, used when AGENT_ENV is unset or "dev".
+logging:
+  level: INFO
